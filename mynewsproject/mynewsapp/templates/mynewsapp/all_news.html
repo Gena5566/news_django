@@ -7,7 +7,7 @@
 {% block content %}
     <!-- Page Header-->
     <header class="masthead" style="background-image: url('{% static 'assets/img/fake-news-1.jpg' %}')">
-        <div class="container position-relative px-4 px-lg-5">
+        <div class container position-relative px-4 px-lg-5">
             <div class="row gx-4 gx-lg-5 justify-content-center">
                 <div class="col-md-10 col-lg-8 col-xl-7">
                     <div class="page-heading">
@@ -31,17 +31,18 @@
                                     <h3 class="news-title">{{ news.title }}</h3>
                                     <a class="news-link" href="{{ news.link }}">Подробнее</a>
                                 </div>
+                                {% if image_present %}
                                     {% if news.image %}
                                         <img src="{{ news.image.url }}" alt="{{ news.title }}" width="600" height="350">
                                     {% elif news.image_url %}
                                         <img src="{{ news.image_url }}" alt="{{ news.title }}" width="600" height="350">
-                                    {% else %}
-                                        <p>No image available for this news.</p>
                                     {% endif %}
-                                    {% if news.content %}
-                                        <p>{{ news.content }}</p>  <!-- Выводим поле content, только если оно существует -->
-                                    {% endif %}
-
+                                {% else %}
+                                    <p>No image available for this news.</p>
+                                {% endif %}
+                                {% if news.content %}
+                                    <p>{{ news.content }}</p>
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </ul>
@@ -50,6 +51,7 @@
         </div>
     </main>
 {% endblock %}
+
 
 
 

@@ -17,4 +17,4 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = AllNews
-        exclude = ('tags',)
+        exclude = ('user',)

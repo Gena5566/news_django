@@ -29,7 +29,18 @@
                     <ul class="navbar-nav ms-auto py-4 py-lg-0">
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'contact' %}">Контакты</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'create' %}">Создать пост</a></li>
-
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            Привет, <span class="red-text">{{ user.username }}</span>
+                            <a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'users:logout' %}">Выход</a></li>
+                        </li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'users:login' %}">Вход</a></li>
+                        </li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'users:register' %}">Регистрация</a></li>
+                        </li>
+                        {% endif %}
                     <!-- Добавьте элементы навигации здесь, если нужно -->
                     </ul>
                 </div>

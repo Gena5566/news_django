@@ -1,65 +1,88 @@
 from django.core.management.base import BaseCommand
-from bs4 import BeautifulSoup
-import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By  # Добавьте эту строку
 from mynewsapp.models import AllNews
-import datetime
 import schedule
 import time
-from datetime import timedelta
+from bs4 import BeautifulSoup
+import requests
+from datetime import datetime
+
 
 class Command(BaseCommand):
     help = 'Parse news and save to the database'
 
     def handle(self, *args, **options):
-        # Настройка расписания выполнения парсинга каждые 1 минута
-        schedule.every(1).minutes.do(self.parse_and_save_news)
+        # Получаем текущего пользователя
+        from usersapp.models import BlogUser  # Замените 'usersapp' на путь к вашему приложению
+        user = BlogUser.objects.get(username='Gena')
+
+        # Настройка расписания выполнения парсинга каждые 1 минуту
+        schedule.every(1).minutes.do(lambda: self.parse_and_save_news(user))
 
         while True:
             schedule.run_pending()
             time.sleep(1)
-            print("Waiting for the next scheduled execution...")
+            self.stdout.write("Waiting for the next scheduled execution...")
 
-    def parse_and_save_news(self):
-        url = 'https://ria.ru/world/'
-        response = requests.get(url)
+    # Обновленный метод parse_and_save_news с добавлением параметра user
+    def parse_and_save_news(self, user):
+        with webdriver.Chrome() as driver:
+            url = 'https://habr.com/ru/flows/develop/articles/'
+            driver.get(url)
 
-        if response.status_code == 200:
-            print("Parsing news...")
-            soup = BeautifulSoup(response.text, 'html.parser')
-            news_items = soup.find_all(class_='list-item')
+            image_elements = driver.find_elements(By.CSS_SELECTOR, '.tm-article-snippet__cover img')
+            image_urls = []
 
-            for item in news_items:
-                title = item.find(class_='list-item__title').text.strip()
-                link = item.find(class_='list-item__title')['href']
+            for image_element in image_elements:
+                image_url = image_element.get_attribute('src')
+                image_urls.append(image_url)
 
-                # Проверка, сохранена ли новость с такой ссылкой
-                if not AllNews.objects.filter(link=link).exists():
-                    date_tag = item.find(class_='list-item__date')
-                    publication_time = self.parse_date(date_tag.text.strip())
+            title_elements = driver.find_elements(By.CSS_SELECTOR, '.tm-title.tm-title_h2 a')
+            time_elements = driver.find_elements(By.CSS_SELECTOR, '.tm-article-snippet time')
 
-                    image_tag = item.find(class_='responsive_img')
-                    image_url = image_tag['src'] if image_tag else None
+            for i in range(len(title_elements)):
+                title = title_elements[i].text.strip()
+                link = title_elements[i].get_attribute('href')
+                time_str = time_elements[i].get_attribute('title')
+                image_url = image_urls[i] if i < len(image_urls) else None  # None, если изображение не найдено
 
-                    if publication_time:
-                        print(f"Publication time for {title}: {publication_time}")
+                # Попробуем преобразовать строку времени в объект datetime
+                try:
+                    publication_time = datetime.strptime(time_str, "%Y-%m-%d, %H:%M")
+                except ValueError:
+                    self.stdout.write(f"Skipped news: {title} (incorrect time)")
+                    continue
+
+                # Проверка, сохранена ли новость с такой ссылкой и временем публикации
+                if not AllNews.objects.filter(link=link, time=publication_time, user=user).exists():
+                    self.stdout.write(f"Title: {title}")
+                    self.stdout.write(f"Link: {link}")
+                    self.stdout.write(f"Publication Time: {publication_time}")
+                    if image_url is not None:
+                        self.stdout.write(f"Image URL: {image_url}")
+
+                        # Создаем и сохраняем объект
                         news_article = AllNews(
                             title=title,
                             link=link,
                             time=publication_time,
-                            image_url=image_url
+                            image_url=image_url,
+                            user=user,  # Добавлено значение user
                         )
-                        news_article.save()  # Сохраняем новость в базу данных
-                        print(f"Saved news: {title}")
+                        news_article.save()
+                        self.stdout.write("Data saved to the database")
+                    else:
+                        self.stdout.write("Skipped news: image not found")
+                else:
+                    self.stdout.write(f"Skipped news: {title} (already saved in the database)")
 
-    def parse_date(self, date_string):
-        try:
-            publication_time = datetime.datetime.strptime(date_string, '%H:%M')
-            current_date = datetime.date.today()
-            publication_time = datetime.datetime.combine(current_date, publication_time.time())  # Присоединяем текущую дату к времени
-            return publication_time
-        except ValueError:
-            print(f"Ошибка при парсинге времени: {date_string}")
-            return None
+
+
+
+
+
+
 
 
 
