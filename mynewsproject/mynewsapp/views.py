@@ -13,7 +13,9 @@ class IndexView(View):
     template_name = 'mynewsapp/index.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        posts = AllNews.objects.all()  # Здесь вы должны получить свои объекты постов
+        return render(request, self.template_name, {'posts': posts})
+
 
 class AllNewsView(LoginRequiredMixin, View):
     template_name = 'mynewsapp/all_news.html'

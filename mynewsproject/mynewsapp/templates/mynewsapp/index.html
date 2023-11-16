@@ -32,6 +32,14 @@
                     <p class="post-meta">
                         Взято из
                         <a href="https://habr.com/ru/flows/develop/articles/">Habr.com</a>
+
+                    {% if news.has_image %}
+                        Есть картинка
+                        {% else%}
+                        Нет картинки
+                    {% endif %}
+                        {{news.has_image}}
+                        {{news.some_method}}
                     </p>
                 </div>
             </div>
