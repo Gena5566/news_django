@@ -10,6 +10,8 @@ class BaseModel(models.Model):
     content = models.TextField(null=True, blank=True)
     user = models.ForeignKey(BlogUser, on_delete=models.CASCADE)
 
+
+
     class Meta:
         abstract = True
 
@@ -19,6 +21,16 @@ class BaseModel(models.Model):
 class AllNews(BaseModel):
     # Дополнительные поля,  для модели AllNews
     pass
+
+    def has_image(self):
+        # print('my image:', self.image)
+        # print('type', type(self.image))
+        #return bool(self.image)
+        return self.image is not None
+
+    def some_method(self):
+        return 'hello from method'
+
     class Meta:
         verbose_name = 'Новость'
         verbose_name_plural = 'Новости'
