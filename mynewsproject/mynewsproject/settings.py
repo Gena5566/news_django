@@ -65,7 +65,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "mynewsapp",
     "django_extensions",
-    "usersapp"
+    "usersapp",
+    "capapp",
 ]
 
 MIDDLEWARE = [
@@ -92,6 +93,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "mynewsapp.context_processors.get_joke",
             ],
         },
     },

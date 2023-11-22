@@ -1,6 +1,16 @@
 from django.db import models
 from usersapp.models import BlogUser
 
+
+class ActiveManager(models.Manager):
+    def get_queryset(self):
+        all_objects = super().get_queryset()
+        return all_objects.filter(is_active=True)
+
+    class Meta:
+        abstract = True
+
+
 class BaseModel(models.Model):
     title = models.CharField(max_length=200)
     link = models.URLField(null=True, blank=True)
@@ -9,6 +19,8 @@ class BaseModel(models.Model):
     image = models.ImageField(upload_to='index', null=True, blank=True)
     content = models.TextField(null=True, blank=True)
     user = models.ForeignKey(BlogUser, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=False)
+
 
 
 
@@ -19,8 +31,9 @@ class BaseModel(models.Model):
         return self.title
 
 class AllNews(BaseModel):
-    # Дополнительные поля,  для модели AllNews
-    pass
+    objects = models.Manager()
+    active_objects = ActiveManager()
+
 
     def has_image(self):
         # print('my image:', self.image)

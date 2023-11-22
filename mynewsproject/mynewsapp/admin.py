@@ -6,9 +6,12 @@ from .models import AllNews
 
 #admin.site.register(AllNews)
 
+def set_active(modeladmin, request, queryset):
+    queryset.update(is_active=True)
 
 class AllNewsAdmin(admin.ModelAdmin):
-    list_display = ['user', 'title', 'link', 'time', 'has_image']
+    list_display = ['user', 'title', 'link', 'time', 'has_image', 'is_active']
+    actions = [set_active]
 
 
 admin.site.register(AllNews, AllNewsAdmin)
