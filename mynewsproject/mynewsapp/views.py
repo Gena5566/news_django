@@ -19,12 +19,18 @@ class IndexView(View):
 
 class AllNewsView(LoginRequiredMixin, View):
     template_name = 'mynewsapp/all_news.html'
-    paginate_by = 3
+    paginate_by = 5
 
     def get(self, request, id):
         #all_news_list = AllNews.objects.filter(is_active=True)
         #all_news_list = AllNews.objects.all().order_by('-time')
-        all_news_list = AllNews.active_objects.all()
+        #all_news_list = AllNews.active_objects.all()
+        # Использую select_related
+        #all_news_list = AllNews.objects.select_related('user').all()
+
+        all_news_list = AllNews.objects.select_related('user').only('id', 'title', 'time', 'image', 'content',
+                                                                    'user__username').all()
+
         paginator = Paginator(all_news_list, self.paginate_by)
         page = request.GET.get('page')
         try:
@@ -34,6 +40,9 @@ class AllNewsView(LoginRequiredMixin, View):
         except EmptyPage:
             all_news = paginator.page(paginator.num_pages)
 
+        # Изменим запрос, чтобы выбирать только необходимое количество новостей
+        all_news_for_page = AllNews.objects.select_related('user').order_by('-time')[:5]
+
         post = get_object_or_404(AllNews, id=id)
 
         title = 'главная страница'
@@ -41,7 +50,8 @@ class AllNewsView(LoginRequiredMixin, View):
         #joke = 'Сайт создан с мною...2023'
         return render(request, self.template_name, {'post': post,
                                 'all_news_list': all_news,
-                                'image_present': post.image or post.image_url}) #'joke': joke
+                                'image_present': post.image or post.image_url,
+                                'all_news_for_page': all_news_for_page}) #'joke': joke
 
 class ContactView(LoginRequiredMixin, View):
     template_name = 'mynewsapp/contact.html'
