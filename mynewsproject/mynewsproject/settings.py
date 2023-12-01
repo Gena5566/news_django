@@ -65,8 +65,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "mynewsapp",
     "django_extensions",
-    "usersapp"
+    "usersapp",
+    "capapp",
+    "debug_toolbar",
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -76,6 +79,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "mynewsproject.urls"
@@ -92,6 +96,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "mynewsapp.context_processors.get_joke",
             ],
         },
     },
@@ -172,3 +177,10 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 # Куда идти на логин
 LOGIN_URL = '/users/login/'
+
+# IP address is listed in Django’s INTERNAL_IPS setting
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]

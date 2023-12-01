@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load str_extensions %}
 {% block title %}Главная страница{% endblock %}
 
 {% load static %}
@@ -26,8 +26,8 @@
                 <!-- Добавьте контент, специфичный для вашей страницы, здесь -->
                 <div class="post-preview">
                     <a href="{% url 'all_news' id=1 %}">
-                        <h2 class="post-title">Сайт предназначен для отображения новостей в мире IT </h2>
-                        <h2 class="post-subtitle">Просмотр новостей в сфере разработки</h2>
+                        <h2 class="post-title">{{ "сайт предназначен для отображения новостей в мире IT"|capitalize_first_letter }}</h2>
+                        <h2 class="post-subtitle">{{ "просмотр новостей в сфере разработки"|superoutput }}</h2>
                     </a>
                     <p class="post-meta">
                         Взято из
@@ -46,3 +46,12 @@
         </div>
     </div>
 {% endblock %}
+
+
+
+
+
+
+
+
+
