@@ -76,19 +76,3 @@ class Command(BaseCommand):
                         self.stdout.write("Skipped news: image not found")
                 else:
                     self.stdout.write(f"Skipped news: {title} (already saved in the database)")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

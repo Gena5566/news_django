@@ -19,14 +19,13 @@
         </div>
     </header>
     <!-- Main Content-->
-    <!-- Main Content-->
     <main class="mb-4">
-        Количество новостей на странице: {{all_news_list|length}}
+        Количество новостей на странице: {{ all_news_list|length }}
         <div class="container px-4 px-lg-5">
             <div class="row gx-4 gx-lg-5 justify-content-center">
                 <div class="col-md-10 col-lg-8 col-xl-7">
                     <ul>
-                        {% for news in all_news_for_page %}
+                        {% for news in all_news_list %}
                             <li>
                                 <div class="news-item">
                                     <span class="news-time">{{ news.time }}</span>
@@ -34,30 +33,23 @@
                                     <p>Автор: {{ news.user.username }}</p>
                                     <a class="news-link" href="{{ news.link }}">Подробнее</a>
                                 </div>
-                                {% if image_present %}
-                                    {% if news.image %}
-                                        <img src="{{ news.image.url }}" alt="{{ news.title }}" width="600" height="350">
-                                    {% elif news.image_url %}
-                                        <img src="{{ news.image_url }}" alt="{{ news.title }}" width="600" height="350">
-                                    {% endif %}
+                                {% if news.image or news.image_url %}
+                                    <img src="{% if news.image %}{{ news.image.url }}{% else %}{{ news.image_url }}{% endif %}" alt="{{ news.title }}" width="600" height="350">
                                 {% else %}
                                     <p>No image available for this news.</p>
                                 {% endif %}
                                 {% if news.content %}
+                                    {{ news.content|safe }}
                                 {% endif %}
-                                {{ news.content|safe }}
                             </li>
                         {% endfor %}
                     </ul>
 
-                    <!-- Добавим блок с ссылками на предыдущую и следующую страницы -->
                     <div class="pagination">
                         <span class="step-links">
                             {% if all_news_list.has_previous %}
-                                <a class="btn btn-primary float-right"
-                                    href="?page=1">&laquo; Первая</a>
-                                <a class="btn btn-primary float-right"
-                                    href="?page={{ all_news_list.previous_page_number }}">предыдущая ←</a>
+                                <a class="btn btn-primary float-right" href="?page=1">&laquo; Первая</a>
+                                <a class="btn btn-primary float-right" href="?page={{ all_news_list.previous_page_number }}">предыдущая ←</a>
                             {% endif %}
 
                             <span class="current" style="font-size: 32px; color: #555; margin-right: 20px;">
@@ -65,10 +57,8 @@
                             </span>
 
                             {% if all_news_list.has_next %}
-                                <a class="btn btn-primary float-right"
-                                    href="?page={{ all_news_list.next_page_number }}">Следующая &rarr;</a>
-                                <a class="btn btn-primary float-right"
-                                    href="?page={{ all_news_list.paginator.num_pages }}">Последняя &raquo;</a>
+                                <a class="btn btn-primary float-right" href="?page={{ all_news_list.next_page_number }}">Следующая &rarr;</a>
+                                <a class="btn btn-primary float-right" href="?page={{ all_news_list.paginator.num_pages }}">Последняя &raquo;</a>
                             {% endif %}
                         </span>
                     </div>
@@ -77,6 +67,7 @@
         </div>
     </main>
 {% endblock %}
+
 
 
 

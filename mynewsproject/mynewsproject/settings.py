@@ -51,7 +51,8 @@ SECRET_KEY = "django-insecure-*h$b_57==fgrxh)5h-l(+yq1%@xf2!k_8#&4+7w!=8+&b_)3d3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
 
 
 # Application definition
@@ -67,9 +68,9 @@ INSTALLED_APPS = [
     "django_extensions",
     "usersapp",
     "capapp",
-    "debug_toolbar",
+    'rest_framework',
+    'django_cleanup.apps.CleanupConfig'
 ]
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -79,7 +80,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "mynewsproject.urls"
@@ -151,12 +151,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+STATIC_URL = '/static/'
+STATIC_ROOT = '/home/mynewsproject/static/'
+
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/home/mynewsproject/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -178,9 +180,10 @@ LOGOUT_REDIRECT_URL = '/'
 # Куда идти на логин
 LOGIN_URL = '/users/login/'
 
-# IP address is listed in Django’s INTERNAL_IPS setting
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}

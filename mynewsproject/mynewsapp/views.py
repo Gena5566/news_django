@@ -9,6 +9,8 @@ from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import AllNews
 from .forms import ContactForm, PostForm
+from django.views.generic.detail import DetailView
+
 
 class IndexView(View):
     template_name = 'mynewsapp/index.html'
@@ -17,7 +19,7 @@ class IndexView(View):
         posts = AllNews.objects.all()  # Здесь вы должны получить свои объекты постов
         return render(request, self.template_name, {'posts': posts})
 
-class AllNewsView(LoginRequiredMixin, View):
+class AllNewsView(LoginRequiredMixin, DetailView):
     template_name = 'mynewsapp/all_news.html'
     paginate_by = 5
 
@@ -25,12 +27,8 @@ class AllNewsView(LoginRequiredMixin, View):
         #all_news_list = AllNews.objects.filter(is_active=True)
         #all_news_list = AllNews.objects.all().order_by('-time')
         #all_news_list = AllNews.active_objects.all()
-        # Использую select_related
-        #all_news_list = AllNews.objects.select_related('user').all()
-
         all_news_list = AllNews.objects.select_related('user').only('id', 'title', 'time', 'image', 'content',
                                                                     'user__username').all()
-
         paginator = Paginator(all_news_list, self.paginate_by)
         page = request.GET.get('page')
         try:
@@ -49,9 +47,10 @@ class AllNewsView(LoginRequiredMixin, View):
         # title = title.capitalize()
         #joke = 'Сайт создан с мною...2023'
         return render(request, self.template_name, {'post': post,
-                                'all_news_list': all_news,
-                                'image_present': post.image or post.image_url,
-                                'all_news_for_page': all_news_for_page}) #'joke': joke
+                                                    'all_news_list': all_news,
+                                                    'image_present': post.image or post.image_url,
+                                                    'all_news_for_page': all_news_for_page})  # 'joke': joke
+
 
 class ContactView(LoginRequiredMixin, View):
     template_name = 'mynewsapp/contact.html'
