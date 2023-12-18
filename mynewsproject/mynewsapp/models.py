@@ -1,6 +1,6 @@
+# mynewsproject/mynewsapp/models.py
 from django.db import models
 from usersapp.models import BlogUser
-
 
 class ActiveManager(models.Manager):
     def get_queryset(self):
@@ -9,7 +9,6 @@ class ActiveManager(models.Manager):
 
     class Meta:
         abstract = True
-
 
 class BaseModel(models.Model):
     title = models.CharField(max_length=200)
@@ -21,7 +20,6 @@ class BaseModel(models.Model):
     user = models.ForeignKey(BlogUser, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
 
-
     class Meta:
         abstract = True
 
@@ -32,11 +30,7 @@ class AllNews(BaseModel):
     objects = models.Manager()
     active_objects = ActiveManager()
 
-
     def has_image(self):
-        # print('my image:', self.image)
-        # print('type', type(self.image))
-        #return bool(self.image)
         return self.image is not None
 
     def some_method(self):
@@ -45,6 +39,15 @@ class AllNews(BaseModel):
     class Meta:
         verbose_name = 'Новость'
         verbose_name_plural = 'Новости'
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    message = models.TextField()
+
+    def __str__(self):
+        return self.name
+
 
 
 
