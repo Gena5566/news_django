@@ -10,6 +10,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import AllNews
 from .forms import ContactForm, PostForm
 from django.views.generic.detail import DetailView
+from django.views.generic import TemplateView
 
 
 class IndexView(View):
@@ -98,6 +99,9 @@ def create_post_view(request):
     else:
         form = PostForm()
     return render(request, template_name, context={'form': form})
+
+class SimpleMainAjax(TemplateView):
+    template_name = 'mynewsapp/simple.html'
 
 
 
